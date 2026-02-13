@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Game 💖</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    background: linear-gradient(to right,#ff9a9e,#fad0c4);
+    color:white;
+    padding:20px;
+}
+.container{
+    background:rgba(255,255,255,0.2);
+    padding:20px;
+    border-radius:20px;
+    margin:20px;
+}
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:20px;
+    background:#ff4d6d;
+    color:white;
+    font-size:16px;
+    margin:10px;
+    cursor:pointer;
+}
+button:hover{ background:#ff1e4d; }
+.hidden{ display:none; }
+
+#gameArea{
+    position:relative;
+    height:250px;
+    background:rgba(255,255,255,0.2);
+    border-radius:15px;
+    overflow:hidden;
+}
+
+input, textarea{
+    width:90%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:10px;
+    border:none;
+}
+
+.heart-grid{
+  display:grid;
+  grid-template-columns:repeat(2,100px);
+  gap:20px;
+  justify-content:center;
+  margin:20px;
+}
+
+.heart, .heart2{
+  width:100px;
+  height:100px;
+  background:pink;
+  border-radius:50%;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.heart.active, .heart2.active{ background:red; }
+
+.success{
+  background:white;
+  color:#ff4d6d;
+  padding:10px;
+  border-radius:15px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 เพลง -->
+<audio id="bgMusic" loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+</audio>
+
+<!-- หน้าแรก -->
+<div id="page1" class="container">
+<h1>🌸 เค้ามีดอกไม้ให้เธอ 💐</h1>
+<p>เธอจะรับดอกไม้ไหม? 🥺</p>
+<button onclick="acceptLove()">รับ 💖</button>
+<button onclick="rejectLove()">ไม่รับ 😜</button>
+</div>
+
+<div id="pageReject" class="container hidden">
+<h2>😢 ไม่รับจริงหรออ</h2>
+<button onclick="goBack()">กลับไปเลือกใหม่</button>
+</div>
+
+<div id="thankPage" class="container hidden">
+<h2>💐 ขอบคุณที่รับดอกไม้ค่ะน้องมีเกมสนุกๆให้เล่นด้วย🥰</h2>
+<button onclick="goToGame()">ไปเล่นเกมกัน 💕</button>
+</div>
+
+<!-- ด่าน 1 -->
+<div id="gamePage" class="hidden">
+<div class="container">
+<h2>🎮 ด่าน 1 เก็บหัวใจ</h2>
+<button onclick="startGame()">เริ่มเกม</button>
+<p id="score">คะแนน: 0</p>
+<div id="gameArea"></div>
+</div>
+</div>
+
+<!-- ด่าน 2 -->
+<div id="memoryPage" class="hidden">
+<div class="container">
+<h2>💗 ด่าน 2 จำ 3 ดวง</h2>
+<div class="heart-grid">
+  <div class="heart" data-id="0"></div>
+  <div class="heart" data-id="1"></div>
+  <div class="heart" data-id="2"></div>
+  <div class="heart" data-id="3"></div>
+</div>
+<button onclick="startMemoryGame()">เริ่มด่าน 2</button>
+<p id="memoryResult"></p>
+</div>
+</div>
+
+<!-- ด่าน 3 -->
+<div id="memoryPage2" class="hidden">
+<div class="container">
+<h2>💜 ด่าน 3 จำ 5 ดวง</h2>
+<div class="heart-grid">
+  <div class="heart2" data-id="0"></div>
+  <div class="heart2" data-id="1"></div>
+  <div class="heart2" data-id="2"></div>
+  <div class="heart2" data-id="3"></div>
+</div>
+<button onclick="startMemoryGame2()">เริ่มด่าน 3</button>
+<p id="memoryResult2"></p>
+</div>
+</div>
+
+<!-- หน้าบอกรัก + ส่งเข้าเมล -->
+<div id="lovePage" class="hidden">
+<div class="container">
+<h1>Happy Valentine's Day 💘</h1>
+<p>เก่งมั้กๆผ่านทุกด่านแล้ว รักที่สุดเลย 🥺💖 สุขสันต์วันวาเลนไทน์นะคะ น้องอาจจะไม่ได้มอบดอกกุหลาบสวยๆ ให้พี่แต่น้องก็ขอมอบสิ่งนี่กับพี่นะคะ น้องดีใจ และจะรักพี่เสมอน้า ดูแลตัวเองดีๆนะคะคนไกลทางนี้เป็นห่วงเสมอ!🤍</p>
+</div>
+
+<div class="container">
+<h2>💌 บอกความในใจถึงแฟนคนนี้</h2>
+
+<form id="loveForm" action="https://formspree.io/f/mzdaeajg" method="POST">
+  <input type="text" name="name" placeholder="ชื่อ 💕" required>
+  <textarea name="message" placeholder="พิมพ์ความในใจตรงนี้ 🥺" required></textarea>
+  <button type="submit">ส่งข้อความ 💖</button>
+</form>
+
+<div id="formSuccess"></div>
+
+</div>
+
+<button onclick="goHome()">⬅ กลับหน้าแรก</button>
+</div>
+
+<script>
+
+/* อ้างอิง element */
+const page1 = document.getElementById("page1");
+const pageReject = document.getElementById("pageReject");
+const thankPage = document.getElementById("thankPage");
+const gamePage = document.getElementById("gamePage");
+const memoryPage = document.getElementById("memoryPage");
+const memoryPage2 = document.getElementById("memoryPage2");
+const lovePage = document.getElementById("lovePage");
+const memoryResult = document.getElementById("memoryResult");
+const memoryResult2 = document.getElementById("memoryResult2");
+const bgMusic = document.getElementById("bgMusic");
+
+/* เปลี่ยนหน้า */
+function acceptLove(){
+  page1.classList.add("hidden");
+  thankPage.classList.remove("hidden");
+  bgMusic.play();
+}
+function rejectLove(){
+  page1.classList.add("hidden");
+  pageReject.classList.remove("hidden");
+}
+function goBack(){
+  pageReject.classList.add("hidden");
+  page1.classList.remove("hidden");
+}
+function goToGame(){
+  thankPage.classList.add("hidden");
+  gamePage.classList.remove("hidden");
+}
+function goHome(){
+  lovePage.classList.add("hidden");
+  page1.classList.remove("hidden");
+}
+
+/* ด่าน 1 */
+let score=0, interval;
+const scoreDisplay=document.getElementById("score");
+const gameArea=document.getElementById("gameArea");
+
+function startGame(){
+score=0;
+scoreDisplay.innerHTML="คะแนน: 0";
+gameArea.innerHTML="";
+interval=setInterval(()=>{
+let heart=document.createElement("div");
+heart.innerHTML="💖";
+heart.style.position="absolute";
+heart.style.left=Math.random()*90+"%";
+heart.style.top="0px";
+heart.style.fontSize="30px";
+heart.style.cursor="pointer";
+heart.onclick=function(){
+score++;
+scoreDisplay.innerHTML="คะแนน: "+score;
+heart.remove();
+if(score>=10){
+clearInterval(interval);
+gamePage.classList.add("hidden");
+memoryPage.classList.remove("hidden");
+}
+};
+gameArea.appendChild(heart);
+let fall=setInterval(()=>{
+heart.style.top=(heart.offsetTop+15)+"px";
+if(heart.offsetTop>220){ heart.remove(); clearInterval(fall); }
+},30);
+},500);
+}
+
+/* ด่าน 2 */
+let memorySequence=[], playerSequence=[], isPlaying=false;
+const hearts=document.querySelectorAll(".heart");
+
+function startMemoryGame(){
+memorySequence=[]; playerSequence=[];
+memoryResult.innerHTML="";
+for(let i=0;i<3;i++){ memorySequence.push(Math.floor(Math.random()*4)); }
+showSequence();
+}
+
+function showSequence(){
+let i=0;
+const seq=setInterval(()=>{
+let heart=hearts[memorySequence[i]];
+heart.classList.add("active");
+setTimeout(()=>heart.classList.remove("active"),500);
+i++;
+if(i>=memorySequence.length){ clearInterval(seq); isPlaying=true; }
+},700);
+}
+
+hearts.forEach(h=>{
+h.addEventListener("click",function(){
+if(!isPlaying) return;
+let id=parseInt(this.dataset.id);
+playerSequence.push(id);
+checkSequence();
+});
+});
+
+function checkSequence(){
+let index=playerSequence.length-1;
+if(playerSequence[index]!==memorySequence[index]){
+memoryResult.innerHTML="❌ ผิดแล้ว!";
+isPlaying=false; return;
+}
+if(playerSequence.length===memorySequence.length){
+memoryResult.innerHTML="💚 ผ่านด่าน 2!";
+setTimeout(()=>{ memoryPage.classList.add("hidden"); memoryPage2.classList.remove("hidden"); },1000);
+}
+}
+
+/* ด่าน 3 */
+let memorySequence2=[], playerSequence2=[], isPlaying2=false;
+const hearts2=document.querySelectorAll(".heart2");
+
+function startMemoryGame2(){
+memorySequence2=[]; playerSequence2=[];
+memoryResult2.innerHTML="";
+for(let i=0;i<5;i++){ memorySequence2.push(Math.floor(Math.random()*4)); }
+showSequence2();
+}
+
+function showSequence2(){
+let i=0;
+const seq=setInterval(()=>{
+let heart=hearts2[memorySequence2[i]];
+heart.classList.add("active");
+setTimeout(()=>heart.classList.remove("active"),500);
+i++;
+if(i>=memorySequence2.length){ clearInterval(seq); isPlaying2=true; }
+},600);
+}
+
+hearts2.forEach(h=>{
+h.addEventListener("click",function(){
+if(!isPlaying2) return;
+let id=parseInt(this.dataset.id);
+playerSequence2.push(id);
+checkSequence2();
+});
+});
+
+function checkSequence2(){
+let index=playerSequence2.length-1;
+if(playerSequence2[index]!==memorySequence2[index]){
+memoryResult2.innerHTML="❌ ผิดแล้ว!";
+isPlaying2=false; return;
+}
+if(playerSequence2.length===memorySequence2.length){
+memoryResult2.innerHTML="💚 ผ่านทุกด่านแล้ว!";
+setTimeout(()=>{ memoryPage2.classList.add("hidden"); lovePage.classList.remove("hidden"); },1000);
+}
+}
+
+/* ส่ง Formspree แบบไม่เด้งหน้า */
+const form = document.getElementById("loveForm");
+const formSuccess = document.getElementById("formSuccess");
+
+form.addEventListener("submit", function(e){
+e.preventDefault();
+fetch(form.action,{
+method:"POST",
+body:new FormData(form),
+headers:{'Accept':'application/json'}
+}).then(()=>{
+formSuccess.innerHTML='<div class="success">💌 ส่งข้อความถึงเค้าแล้วนะ 💕</div>';
+form.reset();
+}).catch(()=>{
+formSuccess.innerHTML='<div class="success">❌ ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะ</div>';
+});
+});
+
+</script>
+</body>
+</html>
